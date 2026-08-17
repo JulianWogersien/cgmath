@@ -592,14 +592,25 @@ impl<S: BaseFloat> Matrix for Matrix2<S> {
 
     #[inline]
     fn swap_columns(&mut self, a: usize, b: usize) {
-        unsafe { ptr::swap(&mut self[a], &mut self[b]) };
+        if a == b {
+            return;
+        }
+
+        let tmp = self[a];
+        self[a] = self[b];
+        self[b] = tmp;
     }
 
     #[inline]
     fn swap_elements(&mut self, a: (usize, usize), b: (usize, usize)) {
+        if a == b {
+            return;
+        }
         let (ac, ar) = a;
         let (bc, br) = b;
-        unsafe { ptr::swap(&mut self[ac][ar], &mut self[bc][br]) };
+        let tmp = self[ac][ar];
+        self[ac][ar] = self[bc][br];
+        self[bc][br] = tmp;
     }
 
     fn transpose(&self) -> Matrix2<S> {
@@ -691,14 +702,26 @@ impl<S: BaseFloat> Matrix for Matrix3<S> {
 
     #[inline]
     fn swap_columns(&mut self, a: usize, b: usize) {
-        unsafe { ptr::swap(&mut self[a], &mut self[b]) };
+        if a == b {
+            return;
+        }
+
+        let tmp = self[a];
+        self[a] = self[b];
+        self[b] = tmp;
     }
 
     #[inline]
     fn swap_elements(&mut self, a: (usize, usize), b: (usize, usize)) {
+        if a == b {
+            return;
+        }
         let (ac, ar) = a;
         let (bc, br) = b;
-        unsafe { ptr::swap(&mut self[ac][ar], &mut self[bc][br]) };
+        
+        let tmp = self[ac][ar];
+        self[ac][ar] = self[bc][br];
+        self[bc][br] = tmp;
     }
 
     fn transpose(&self) -> Matrix3<S> {
@@ -807,14 +830,26 @@ impl<S: BaseFloat> Matrix for Matrix4<S> {
 
     #[inline]
     fn swap_columns(&mut self, a: usize, b: usize) {
-        unsafe { ptr::swap(&mut self[a], &mut self[b]) };
+        if a == b {
+            return;
+        }
+
+        let tmp = self[a];
+        self[a] = self[b];
+        self[b] = tmp;
     }
 
     #[inline]
     fn swap_elements(&mut self, a: (usize, usize), b: (usize, usize)) {
+        if a == b {
+            return;
+        }
         let (ac, ar) = a;
         let (bc, br) = b;
-        unsafe { ptr::swap(&mut self[ac][ar], &mut self[bc][br]) };
+
+        let tmp = self[ac][ar];
+        self[ac][ar] = self[bc][br];
+        self[bc][br] = tmp;
     }
 
     fn transpose(&self) -> Matrix4<S> {
