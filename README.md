@@ -9,6 +9,9 @@
 
 A linear algebra and mathematics library for computer graphics.
 
+Note: Custom Fork made by @JulianWogersien  
+The Purpose of this Fork is to expand the Library as well as apply some of the open Fixes since the Original is unmaintained
+
 The library provides:
 
 - vectors: `Vector2`, `Vector3`, `Vector4`
