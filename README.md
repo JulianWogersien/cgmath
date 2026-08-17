@@ -10,7 +10,9 @@
 A linear algebra and mathematics library for computer graphics.
 
 Note: Custom Fork made by @JulianWogersien  
-The Purpose of this Fork is to expand the Library as well as apply some of the open Fixes since the Original is unmaintained
+The Purpose of this Fork is to expand the Library as well as apply some of the open Fixes since the Original is unmaintained.  
+I am not a mathematician so there may be soundness issues and i probably wont publish this on crates.io but feel free to use it anyways.  
+I will most likely also include General game Math not just computer graphics as that is what i need.  
 
 The library provides:
 
