@@ -118,3 +118,4 @@ mod rotation;
 mod transform;
 
 mod projection;
+pub mod bounding;

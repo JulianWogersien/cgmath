@@ -86,6 +86,41 @@ macro_rules! impl_point {
                 $PointN { $($field),+ }
             }
 
+            /// Returns true if each of the components of self are >= the corrosponding components of other
+            pub fn all_ge(self, other: Self) -> bool 
+                where S: BaseNum
+            {
+                $(self.$field >= other.$field)&&+
+            }
+
+            /// Returns true if each of the components of self are <= the corrosponding components of other
+            pub fn all_le(self, other: Self) -> bool 
+                where S: BaseNum
+            {
+                $(self.$field <= other.$field)&&+
+            }
+
+            /// Min between two Points
+            pub fn min(self, other: Self) -> $PointN<S> 
+                where S: BaseNum
+            {
+                $PointN { $($field: if self.$field > other.$field { self.$field } else { other.$field }),+ }
+            }
+
+            /// Max Between two Points
+            pub fn max(self, other: Self) -> $PointN<S> 
+                where S: BaseNum
+            {
+                $PointN { $($field: if self.$field < other.$field { self.$field } else { other.$field }),+ }
+            }
+
+            /// Component Wise Clamping
+            pub fn clamp(self, min: Self, max: Self) -> $PointN<S>
+                where S: BaseNum + BaseFloat
+            {
+                $PointN { $($field: self.$field.clamp(min.$field, max.$field)),+ }
+            }
+
             /// Perform the given operation on each field in the point, returning a new point
             /// constructed from the operations.
             #[inline]
