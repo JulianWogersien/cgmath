@@ -30,6 +30,8 @@ use angle::Rad;
 use approx;
 use num::{BaseFloat, BaseNum};
 
+use num_traits::Signed;
+
 #[cfg(feature = "mint")]
 use mint;
 
@@ -116,6 +118,48 @@ macro_rules! impl_vector {
                 where F: FnMut(S, S2) -> S3
             {
                 $VectorN { $($field: f(self.$field, v2.$field)),+ }
+            }
+
+            /// Returns true if each of the components of self are >= the corrosponding components of other
+            pub fn all_ge(self, other: Self) -> bool 
+                where S: BaseNum
+            {
+                $(self.$field >= other.$field)&&+
+            }
+
+            /// Returns true if each of the components of self are <= the corrosponding components of other
+            pub fn all_le(self, other: Self) -> bool 
+                where S: BaseNum
+            {
+                $(self.$field <= other.$field)&&+
+            }
+
+            /// Min between two Vectors
+            pub fn min(self, other: Self) -> $VectorN<S> 
+                where S: BaseNum
+            {
+                $VectorN { $($field: if self.$field > other.$field { self.$field } else { other.$field }),+ }
+            }
+
+            /// Max Between two Vectors
+            pub fn max(self, other: Self) -> $VectorN<S> 
+                where S: BaseNum
+            {
+                $VectorN { $($field: if self.$field < other.$field { self.$field } else { other.$field }),+ }
+            }
+
+            /// Elementwise abs of the Vector
+            pub fn abs(self) -> $VectorN<S>
+                where S: BaseNum + Signed
+            {
+                $VectorN { $($field: self.$field.abs()),+ }
+            }
+
+            /// Component Wise Clamping
+            pub fn clamp(self, min: Self, max: Self) -> $VectorN<S>
+                where S: BaseNum + BaseFloat
+            {
+                $VectorN { $($field: self.$field.clamp(min.$field, max.$field)),+ }
             }
         }
 

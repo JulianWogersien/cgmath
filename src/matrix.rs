@@ -23,7 +23,6 @@ use std::fmt;
 use std::iter;
 use std::mem;
 use std::ops::*;
-use std::ptr;
 
 use structure::*;
 
@@ -35,6 +34,8 @@ use point::{Point2, Point3};
 use quaternion::Quaternion;
 use transform::{Transform, Transform2, Transform3};
 use vector::{Vector2, Vector3, Vector4};
+
+use num_traits::Signed;
 
 #[cfg(feature = "mint")]
 use mint;
@@ -1243,6 +1244,12 @@ impl<S: BaseFloat> Transform3 for Matrix4<S> {
 
 macro_rules! impl_matrix {
     ($MatrixN:ident, $VectorN:ident { $($field:ident : $row_index:expr),+ }) => {
+        impl<S: BaseNum + Signed> $MatrixN<S> {
+            pub fn abs(&self) -> Self {
+                $MatrixN { $($field: self.$field.abs()),+ }
+            }
+        }
+
         impl_operator!(<S: BaseFloat> Neg for $MatrixN<S> {
             fn neg(matrix) -> $MatrixN<S> { $MatrixN { $($field: -matrix.$field),+ } }
         });
