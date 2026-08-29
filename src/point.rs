@@ -120,6 +120,22 @@ macro_rules! impl_point {
             {
                 $PointN { $($field: self.$field.clamp(min.$field, max.$field)),+ }
             }
+            
+            /// Selects the Fields of either if true or if false based on the mask given
+            /// The Mask Should have either 1.0 for true or -1.0 for false
+            pub fn select(mask: $PointN<S>, if_true: $PointN<S>, if_false: $PointN<S>) -> $PointN<S> 
+                where S: BaseFloat
+            {
+                $PointN { $($field: if mask.$field == S::from(1.0).unwrap() { if_true.$field } else { if_false.$field } ),+ }
+            }
+
+            /// Selects the Fields of either if true or if false based on the mask vector given
+            /// The Mask Vector Should have either 1.0 for true or -1.0 for false
+            pub fn select_vec(mask: $VectorN<S>, if_true: $PointN<S>, if_false: $PointN<S>) -> $PointN<S> 
+                where S: BaseFloat
+            {
+                $PointN { $($field: if mask.$field == S::from(1.0).unwrap() { if_true.$field } else { if_false.$field } ),+ }
+            }
 
             /// Perform the given operation on each field in the point, returning a new point
             /// constructed from the operations.

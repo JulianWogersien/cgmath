@@ -134,6 +134,70 @@ macro_rules! impl_vector {
                 $(self.$field <= other.$field)&&+
             }
 
+            /// Returns Mask of which are >= or not
+            pub fn ge(self, other: Self) -> $VectorN<S>
+                where S: BaseFloat + Signed
+            {
+                $VectorN { $($field: if self.$field >= other.$field { S::from(1.0).unwrap() } else { S::from(-1.0).unwrap() } ),+ }
+            }
+
+            /// Returns true if each of the components of self are <= the corrosponding components of other
+            pub fn le(self, other: Self) -> $VectorN<S> 
+                where S: BaseFloat + Signed
+            {
+                $VectorN { $($field: if self.$field <= other.$field { S::from(1.0).unwrap() } else { S::from(-1.0).unwrap() } ),+ }
+            }
+
+            /// Returns true if each of the components of self are > the corrosponding components of other
+            pub fn all_gt(self, other: Self) -> bool 
+                where S: BaseNum
+            {
+                $(self.$field > other.$field)&&+
+            }
+
+            /// Returns true if each of the components of self are < the corrosponding components of other
+            pub fn all_lt(self, other: Self) -> bool 
+                where S: BaseNum
+            {
+                $(self.$field < other.$field)&&+
+            }
+
+            /// Returns Mask of which are > or not
+            pub fn gt(self, other: Self) -> $VectorN<S>
+                where S: BaseFloat + Signed
+            {
+                $VectorN { $($field: if self.$field > other.$field { S::from(1.0).unwrap() } else { S::from(-1.0).unwrap() } ),+ }
+            }
+
+            /// Returns true if each of the components of self are < the corrosponding components of other
+            pub fn lt(self, other: Self) -> $VectorN<S> 
+                where S: BaseFloat + Signed
+            {
+                $VectorN { $($field: if self.$field < other.$field { S::from(1.0).unwrap() } else { S::from(-1.0).unwrap() } ),+ }
+            }
+
+            /// Selects the Fields of either if true or if false based on the mask vector given
+            /// The Mask Vector Should have either 1.0 for true or -1.0 for false
+            pub fn select(mask: $VectorN<S>, if_true: $VectorN<S>, if_false: $VectorN<S>) -> $VectorN<S> 
+                where S: BaseFloat
+            {
+                $VectorN { $($field: if mask.$field == S::from(1.0).unwrap() { if_true.$field } else { if_false.$field } ),+ }
+            }
+
+            /// Computs max(self.x, self.y, .....)
+            pub fn max_element(self) -> S
+                where S: BaseFloat
+            {
+                fold_array!(max, $(self.$field),+)
+            }
+
+            /// computes min(self.x, self.y,......)
+            pub fn min_element(self) -> S
+                where S: BaseFloat
+            {
+                fold_array!(min, $(self.$field),+)
+            }
+
             /// Min between two Vectors
             pub fn min(self, other: Self) -> $VectorN<S> 
                 where S: BaseNum
@@ -160,6 +224,20 @@ macro_rules! impl_vector {
                 where S: BaseNum + BaseFloat
             {
                 $VectorN { $($field: self.$field.clamp(min.$field, max.$field)),+ }
+            }
+
+            /// Reciprocal of the Vector
+            pub fn reciprocal(self) -> $VectorN<S>
+                where S: BaseFloat
+            {
+                $VectorN { $($field: S::one() / self.$field),+ }
+            }
+
+            /// Per Component Signum
+            pub fn signum(self) -> $VectorN<S> 
+                where S: BaseNum + Signed
+            {
+                $VectorN { $($field: self.$field.signum()),+ }
             }
         }
 
