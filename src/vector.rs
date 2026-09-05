@@ -235,9 +235,9 @@ macro_rules! impl_vector {
 
             /// Per Component Signum
             pub fn signum(self) -> $VectorN<S> 
-                where S: BaseNum + Signed
+                where S: BaseFloat + Signed
             {
-                $VectorN { $($field: self.$field.signum()),+ }
+                $VectorN { $($field: if self.$field.is_nan() { S::from(f32::NAN).unwrap() } else {S::copysign(S::from(1.0).unwrap(), self.$field)} ),+ }
             }
         }
 
