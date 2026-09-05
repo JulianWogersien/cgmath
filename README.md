@@ -13,6 +13,13 @@ Note: Custom Fork made by @JulianWogersien
 The Purpose of this Fork is to expand the Library as well as apply some of the open Fixes since the Original is unmaintained.  
 I am not a mathematician so there may be soundness issues and i probably wont publish this on crates.io but feel free to use it anyways.  
 I will most likely also include General game Math not just computer graphics as that is what i need.  
+  
+Added in this fork:
+
+- additional vector ops such as `abs`, `max`, `clamp`
+- additional point ops such as `max`, `clamp`, `select`
+- bounding: `AABB3d`, `BoundingSphere`
+- raycasting: `RayCast3d`, `AABBCast3d`, `BoundingSphereCast`
 
 The library provides:
 
