@@ -345,3 +345,133 @@ impl<S: BaseFloat + num_traits::Signed> IntersectsVolume<AABB3d<S>> for Bounding
         volume.intersects(self)
     }
 }
+
+#[cfg(test)]
+mod bounding_sphere_tests {
+    use approx::assert_relative_eq;
+
+    use super::BoundingSphere;
+    use crate::{Point3, Quaternion, Vector3, bounding::{BoundingVolume, IntersectsVolume}, prelude::*};
+
+    #[test]
+    fn area() {
+        let sphere = BoundingSphere::new(Point3::from_value(1.0), 5.);
+        // Since this number is messy we check it with a higher threshold
+        assert!(f32::abs(sphere.visible_area() - 157.0796) < 0.001);
+    }
+
+    #[test]
+    fn contains() {
+        let a = BoundingSphere::new(Point3::from_value(1.0), 5.);
+        let b = BoundingSphere::new(Point3::new(5.5, 1., 1.), 1.);
+        assert!(!a.contains(&b));
+        let b = BoundingSphere::new(Point3::new(1., -3.5, 1.), 0.5);
+        assert!(a.contains(&b));
+    }
+
+    #[test]
+    fn contains_identical() {
+        let a = BoundingSphere::new(Point3::from_value(1.0), 5.);
+        assert!(a.contains(&a));
+    }
+
+    #[test]
+    fn merge() {
+        // When merging two circles that don't contain each other, we find a center position that
+        // contains both
+        let a = BoundingSphere::new(Point3::from_value(1.0), 5.);
+        let b = BoundingSphere::new(Point3::new(1., 1., -4.), 1.);
+        let merged = a.merge(&b);
+        assert!((merged.center - Vector3::new(1., 1., 0.5)).to_vec().magnitude() < f32::EPSILON);
+        assert!(f32::abs(merged.radius - 5.5) < f32::EPSILON);
+        assert!(merged.contains(&a));
+        assert!(merged.contains(&b));
+        assert!(!a.contains(&merged));
+        assert!(!b.contains(&merged));
+
+        // When one circle contains the other circle, we use the bigger circle
+        let b = BoundingSphere::new(Point3::origin(), 3.);
+        assert!(a.contains(&b));
+        let merged = a.merge(&b);
+        assert_eq!(merged.center, a.center);
+        assert_eq!(merged.radius, a.radius);
+
+        // When two circles are at the same point, we use the bigger radius
+        let b = BoundingSphere::new(Point3::from_value(1.0), 6.);
+        let merged = a.merge(&b);
+        assert_eq!(merged.center, a.center);
+        assert_eq!(merged.radius, b.radius);
+    }
+
+    #[test]
+    fn merge_identical() {
+        let a = BoundingSphere::new(Point3::from_value(1.0), 5.);
+        let merged = a.merge(&a);
+        assert_eq!(merged.center, a.center);
+        assert_eq!(merged.radius, a.radius);
+    }
+
+    #[test]
+    fn grow() {
+        let a = BoundingSphere::new(Point3::from_value(1.0), 5.);
+        let padded = a.grow(1.25_f32);
+        assert!(f32::abs(padded.radius - 6.25) < f32::EPSILON);
+        assert!(padded.contains(&a));
+        assert!(!a.contains(&padded));
+    }
+
+    #[test]
+    fn shrink() {
+        let a = BoundingSphere::new(Point3::from_value(1.0), 5.);
+        let shrunk = a.shrink(0.5_f32);
+        assert!(f32::abs(shrunk.radius - 4.5) < f32::EPSILON);
+        assert!(a.contains(&shrunk));
+        assert!(!shrunk.contains(&a));
+    }
+
+    #[test]
+    fn scale_around_center() {
+        let a = BoundingSphere::new(Point3::from_value(1.0), 5.);
+        let scaled = a.scale_around_center(2_f32);
+        assert!(f32::abs(scaled.radius - 10.) < f32::EPSILON);
+        assert!(!a.contains(&scaled));
+        assert!(scaled.contains(&a));
+    }
+
+    #[test]
+    fn transform() {
+        let a = BoundingSphere::new(Point3::from_value(1.0), 5.0);
+        let transformed = a.transformed_by(
+            Vector3::new(2.0, -2.0, 4.0),
+            Quaternion::from_angle_z(crate::Rad(core::f32::consts::FRAC_PI_4)),
+        );
+        assert_relative_eq!(
+            transformed.center,
+            Point3::new(2.0, core::f32::consts::SQRT_2 - 2.0, 5.0)
+        );
+        assert_eq!(transformed.radius, 5.0);
+    }
+
+    #[test]
+    fn closest_point() {
+        let sphere = BoundingSphere::new(Point3::origin(), 1.0);
+        assert_eq!(sphere.closest_point(Point3::new(1.0, 0.0, 0.0) * 10.0), Point3::new(1.0, 0.0, 0.0));
+        assert_eq!(
+            sphere.closest_point(Point3::from_value(-1.0) * 10.0),
+            Point3::from_value(-1.0) / 3.0f32.sqrt()
+        );
+        assert_eq!(
+            sphere.closest_point(Point3::new(0.25, 0.1, 0.3)),
+            Point3::new(0.25, 0.1, 0.3)
+        );
+    }
+
+    #[test]
+    fn intersect_bounding_sphere() {
+        let sphere = BoundingSphere::new(Point3::origin(), 1.0);
+        assert!(sphere.intersects(&BoundingSphere::new(Point3::origin(), 1.0)));
+        assert!(sphere.intersects(&BoundingSphere::new(Point3::from_value(1.0) * 1.1, 1.0)));
+        assert!(sphere.intersects(&BoundingSphere::new(Point3::from_value(-1.0) * 1.1, 1.0)));
+        assert!(!sphere.intersects(&BoundingSphere::new(Point3::from_value(1.0) * 1.2, 1.0)));
+    }
+}
