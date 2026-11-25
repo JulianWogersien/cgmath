@@ -260,6 +260,34 @@ macro_rules! impl_vector {
                 $VectorN { $($field: if self.$field < other.$field { S::from(1.0).unwrap() } else { S::from(-1.0).unwrap() } ),+ }
             }
 
+            /// Returns Mask of which are >= or not
+            pub fn ge_scalar(self, other: S) -> $VectorN<S>
+                where S: BaseFloat + Signed
+            {
+                $VectorN { $($field: if self.$field >= other { S::from(1.0).unwrap() } else { S::from(-1.0).unwrap() } ),+ }
+            }
+
+            /// Returns Mask of which are <= or not
+            pub fn le_scalar(self, other: S) -> $VectorN<S>
+                where S: BaseFloat + Signed
+            {
+                $VectorN { $($field: if self.$field <= other { S::from(1.0).unwrap() } else { S::from(-1.0).unwrap() } ),+ }
+            }
+
+            /// Returns Mask of which are > or not
+            pub fn gt_scalar(self, other: S) -> $VectorN<S>
+                where S: BaseFloat + Signed
+            {
+                $VectorN { $($field: if self.$field > other { S::from(1.0).unwrap() } else { S::from(-1.0).unwrap() } ),+ }
+            }
+
+            /// Returns Mask of which  are  < or not
+            pub fn lt_scalar(self, other: S) -> $VectorN<S>
+                where S: BaseFloat + Signed
+            {
+                $VectorN { $($field: if self.$field < other { S::from(1.0).unwrap() } else { S::from(-1.0).unwrap() } ),+ }
+            }
+
             /// Selects the Fields of either if true or if false based on the mask vector given
             /// The Mask Vector Should have either 1.0 for true or -1.0 for false
             pub fn select(mask: $VectorN<S>, if_true: $VectorN<S>, if_false: $VectorN<S>) -> $VectorN<S>
